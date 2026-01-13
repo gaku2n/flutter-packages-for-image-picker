@@ -6,7 +6,6 @@ package io.flutter.plugins.imagepicker;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Intent;
@@ -16,7 +15,6 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.MediaStore;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -92,19 +90,6 @@ public class ImagePickerDelegate
   // Hotokami brand color: #75BE00 (RGB: 117, 190, 0)
   // Color long format: 0xAARRGGBB where AA is alpha (FF for fully opaque)
   private static final long HOTOKAMI_BRAND_COLOR = 0xFF75BE00L;
-
-  /**
-   * Creates ActivityOptions with no enter/exit animations.
-   * Used to prevent the scrim animation when launching/closing Photo Picker.
-   */
-  @SuppressWarnings("deprecation")
-  private Bundle getNoAnimationOptions() {
-    // makeCustomAnimation(context, enterAnim, exitAnim) - both set to 0 to disable animations
-    // Note: This controls the animation when the new activity starts.
-    // The return animation is controlled by the called activity (Photo Picker),
-    // so we also need to set pending transition on return.
-    return ActivityOptions.makeCustomAnimation(activity, 0, 0).toBundle();
-  }
 
   public enum CameraDevice {
     REAR,
@@ -315,8 +300,7 @@ public class ImagePickerDelegate
 
   private void launchPickMediaFromGalleryIntent(Messages.GeneralOptions generalOptions) {
     Intent pickMediaIntent;
-    boolean usePhotoPicker = generalOptions.getUsePhotoPicker();
-    if (usePhotoPicker) {
+    if (generalOptions.getUsePhotoPicker()) {
       if (generalOptions.getAllowMultiple()) {
         int limit = ImagePickerUtils.getLimitFromOption(generalOptions);
 
@@ -352,13 +336,7 @@ public class ImagePickerDelegate
       pickMediaIntent.putExtra("CONTENT_TYPE", mimeTypes);
       pickMediaIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, generalOptions.getAllowMultiple());
     }
-    // Use no-animation options for Photo Picker to prevent scrim "rising up" animation
-    if (usePhotoPicker) {
-      ActivityCompat.startActivityForResult(
-          activity, pickMediaIntent, REQUEST_CODE_CHOOSE_MEDIA_FROM_GALLERY, getNoAnimationOptions());
-    } else {
-      activity.startActivityForResult(pickMediaIntent, REQUEST_CODE_CHOOSE_MEDIA_FROM_GALLERY);
-    }
+    activity.startActivityForResult(pickMediaIntent, REQUEST_CODE_CHOOSE_MEDIA_FROM_GALLERY);
   }
 
   public void chooseVideoFromGallery(
@@ -389,13 +367,7 @@ public class ImagePickerDelegate
       pickVideoIntent.setType("video/*");
     }
 
-    // Use no-animation options for Photo Picker to prevent scrim "rising up" animation
-    if (usePhotoPicker) {
-      ActivityCompat.startActivityForResult(
-          activity, pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY, getNoAnimationOptions());
-    } else {
-      activity.startActivityForResult(pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
-    }
+    activity.startActivityForResult(pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
   }
 
   public void takeVideoWithCamera(
@@ -494,13 +466,7 @@ public class ImagePickerDelegate
       pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
       pickImageIntent.setType("image/*");
     }
-    // Use no-animation options for Photo Picker to prevent scrim "rising up" animation
-    if (usePhotoPicker) {
-      ActivityCompat.startActivityForResult(
-          activity, pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY, getNoAnimationOptions());
-    } else {
-      activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
-    }
+    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
   }
 
   private void launchMultiPickImageFromGalleryIntent(Boolean usePhotoPicker, int limit) {
@@ -524,14 +490,8 @@ public class ImagePickerDelegate
       pickMultiImageIntent.setType("image/*");
       pickMultiImageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
     }
-    // Use no-animation options for Photo Picker to prevent scrim "rising up" animation
-    if (usePhotoPicker) {
-      ActivityCompat.startActivityForResult(
-          activity, pickMultiImageIntent, REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY, getNoAnimationOptions());
-    } else {
-      activity.startActivityForResult(
-          pickMultiImageIntent, REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY);
-    }
+    activity.startActivityForResult(
+        pickMultiImageIntent, REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY);
   }
 
   public void chooseMultiVideoFromGallery(
@@ -568,14 +528,8 @@ public class ImagePickerDelegate
       pickMultiVideoIntent.setType("video/*");
       pickMultiVideoIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
     }
-    // Use no-animation options for Photo Picker to prevent scrim "rising up" animation
-    if (usePhotoPicker) {
-      ActivityCompat.startActivityForResult(
-          activity, pickMultiVideoIntent, REQUEST_CODE_CHOOSE_MULTI_VIDEO_FROM_GALLERY, getNoAnimationOptions());
-    } else {
-      activity.startActivityForResult(
-          pickMultiVideoIntent, REQUEST_CODE_CHOOSE_MULTI_VIDEO_FROM_GALLERY);
-    }
+    activity.startActivityForResult(
+        pickMultiVideoIntent, REQUEST_CODE_CHOOSE_MULTI_VIDEO_FROM_GALLERY);
   }
 
   public void takeImageWithCamera(
@@ -740,31 +694,9 @@ public class ImagePickerDelegate
         return false;
     }
 
-    // Disable return animation for Photo Picker (gallery) requests
-    if (isPhotoPickerRequest(requestCode)) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        // API 34+: Use overrideActivityTransition for CLOSE transition
-        activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, 0, 0);
-      } else {
-        // Legacy: Use deprecated overridePendingTransition
-        activity.overridePendingTransition(0, 0);
-      }
-    }
-
     executor.execute(handlerRunnable);
 
     return true;
-  }
-
-  /**
-   * Checks if the request code is for a Photo Picker (gallery) operation.
-   */
-  private boolean isPhotoPickerRequest(int requestCode) {
-    return requestCode == REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY
-        || requestCode == REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY
-        || requestCode == REQUEST_CODE_CHOOSE_MULTI_VIDEO_FROM_GALLERY
-        || requestCode == REQUEST_CODE_CHOOSE_MEDIA_FROM_GALLERY
-        || requestCode == REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY;
   }
 
   @Nullable
