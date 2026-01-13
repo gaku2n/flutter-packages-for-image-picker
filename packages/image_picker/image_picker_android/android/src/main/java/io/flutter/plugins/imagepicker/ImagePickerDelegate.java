@@ -307,9 +307,12 @@ public class ImagePickerDelegate
                     new PickVisualMediaRequest.Builder()
                         .setMediaType(
                             ActivityResultContracts.PickVisualMedia.ImageAndVideo.INSTANCE)
-                        // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
-                        .setIsOrderedSelection(true)
                         .build());
+        // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
+        // Using MediaStore extra directly for compatibility with older activity library versions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+          pickMediaIntent.putExtra(MediaStore.EXTRA_PICK_IMAGES_IN_ORDER, true);
+        }
       } else {
         pickMediaIntent =
             new ActivityResultContracts.PickVisualMedia()
@@ -467,9 +470,12 @@ public class ImagePickerDelegate
                   activity,
                   new PickVisualMediaRequest.Builder()
                       .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                      // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
-                      .setIsOrderedSelection(true)
                       .build());
+      // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
+      // Using MediaStore extra directly for compatibility with older activity library versions
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        pickMultiImageIntent.putExtra(MediaStore.EXTRA_PICK_IMAGES_IN_ORDER, true);
+      }
     } else {
       pickMultiImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
       pickMultiImageIntent.setType("image/*");
@@ -501,9 +507,12 @@ public class ImagePickerDelegate
                   activity,
                   new PickVisualMediaRequest.Builder()
                       .setMediaType(ActivityResultContracts.PickVisualMedia.VideoOnly.INSTANCE)
-                      // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
-                      .setIsOrderedSelection(true)
                       .build());
+      // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
+      // Using MediaStore extra directly for compatibility with older activity library versions
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        pickMultiVideoIntent.putExtra(MediaStore.EXTRA_PICK_IMAGES_IN_ORDER, true);
+      }
     } else {
       pickMultiVideoIntent = new Intent(Intent.ACTION_GET_CONTENT);
       pickMultiVideoIntent.setType("video/*");
