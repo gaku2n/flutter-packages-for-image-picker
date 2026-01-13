@@ -95,9 +95,14 @@ public class ImagePickerDelegate
 
   /**
    * Creates ActivityOptions with no enter/exit animations.
-   * Used to prevent the scrim "rising up" animation when launching Photo Picker.
+   * Used to prevent the scrim animation when launching/closing Photo Picker.
    */
+  @SuppressWarnings("deprecation")
   private Bundle getNoAnimationOptions() {
+    // makeCustomAnimation(context, enterAnim, exitAnim) - both set to 0 to disable animations
+    // Note: This controls the animation when the new activity starts.
+    // The return animation is controlled by the called activity (Photo Picker),
+    // so we also need to set pending transition on return.
     return ActivityOptions.makeCustomAnimation(activity, 0, 0).toBundle();
   }
 
@@ -737,7 +742,13 @@ public class ImagePickerDelegate
 
     // Disable return animation for Photo Picker (gallery) requests
     if (isPhotoPickerRequest(requestCode)) {
-      activity.overridePendingTransition(0, 0);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        // API 34+: Use overrideActivityTransition for CLOSE transition
+        activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, 0, 0);
+      } else {
+        // Legacy: Use deprecated overridePendingTransition
+        activity.overridePendingTransition(0, 0);
+      }
     }
 
     executor.execute(handlerRunnable);
