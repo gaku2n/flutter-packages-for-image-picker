@@ -87,9 +87,9 @@ public class ImagePickerDelegate
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
-  // Hotokami brand color: #75BE00 (RGB: 117, 190, 0)
+  // Brand color: #75BE00 (RGB: 117, 190, 0)
   // Color long format: 0xAARRGGBB where AA is alpha (FF for fully opaque)
-  private static final long HOTOKAMI_BRAND_COLOR = 0xFF75BE00L;
+  private static final long BRAND_COLOR = 0xFF75BE00L;
 
   public enum CameraDevice {
     REAR,
@@ -311,7 +311,7 @@ public class ImagePickerDelegate
                     new PickVisualMediaRequest.Builder()
                         .setMediaType(
                             ActivityResultContracts.PickVisualMedia.ImageAndVideo.INSTANCE)
-                        .setAccentColor(HOTOKAMI_BRAND_COLOR)
+                        .setAccentColor(BRAND_COLOR)
                         .build());
         // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
         // Using MediaStore extra directly for compatibility with older activity library versions
@@ -326,7 +326,7 @@ public class ImagePickerDelegate
                     new PickVisualMediaRequest.Builder()
                         .setMediaType(
                             ActivityResultContracts.PickVisualMedia.ImageAndVideo.INSTANCE)
-                        .setAccentColor(HOTOKAMI_BRAND_COLOR)
+                        .setAccentColor(BRAND_COLOR)
                         .build());
       }
     } else {
@@ -360,7 +360,7 @@ public class ImagePickerDelegate
                   activity,
                   new PickVisualMediaRequest.Builder()
                       .setMediaType(ActivityResultContracts.PickVisualMedia.VideoOnly.INSTANCE)
-                      .setAccentColor(HOTOKAMI_BRAND_COLOR)
+                      .setAccentColor(BRAND_COLOR)
                       .build());
     } else {
       pickVideoIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -460,7 +460,7 @@ public class ImagePickerDelegate
                   activity,
                   new PickVisualMediaRequest.Builder()
                       .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                      .setAccentColor(HOTOKAMI_BRAND_COLOR)
+                      .setAccentColor(BRAND_COLOR)
                       .build());
     } else {
       pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -478,7 +478,7 @@ public class ImagePickerDelegate
                   activity,
                   new PickVisualMediaRequest.Builder()
                       .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                      .setAccentColor(HOTOKAMI_BRAND_COLOR)
+                      .setAccentColor(BRAND_COLOR)
                       .build());
       // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
       // Using MediaStore extra directly for compatibility with older activity library versions
@@ -516,7 +516,7 @@ public class ImagePickerDelegate
                   activity,
                   new PickVisualMediaRequest.Builder()
                       .setMediaType(ActivityResultContracts.PickVisualMedia.VideoOnly.INSTANCE)
-                      .setAccentColor(HOTOKAMI_BRAND_COLOR)
+                      .setAccentColor(BRAND_COLOR)
                       .build());
       // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
       // Using MediaStore extra directly for compatibility with older activity library versions
