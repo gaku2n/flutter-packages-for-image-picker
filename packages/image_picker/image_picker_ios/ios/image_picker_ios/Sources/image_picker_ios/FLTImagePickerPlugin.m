@@ -94,6 +94,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       [[PHPickerConfiguration alloc] initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
   config.selectionLimit = context.maxItemCount;
   config.preferredAssetRepresentationMode = PHPickerConfigurationAssetRepresentationModeCurrent;
+  // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
+  if (@available(iOS 15, *)) {
+    config.selection = PHPickerConfigurationSelectionOrdered;
+  }
   NSMutableArray<PHPickerFilter *> *filters = [[NSMutableArray alloc] init];
   if (context.includeImages) {
     [filters addObject:[PHPickerFilter imagesFilter]];

@@ -307,6 +307,8 @@ public class ImagePickerDelegate
                     new PickVisualMediaRequest.Builder()
                         .setMediaType(
                             ActivityResultContracts.PickVisualMedia.ImageAndVideo.INSTANCE)
+                        // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
+                        .setIsOrderedSelection(true)
                         .build());
       } else {
         pickMediaIntent =
@@ -465,6 +467,8 @@ public class ImagePickerDelegate
                   activity,
                   new PickVisualMediaRequest.Builder()
                       .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                      // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
+                      .setIsOrderedSelection(true)
                       .build());
     } else {
       pickMultiImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -497,6 +501,8 @@ public class ImagePickerDelegate
                   activity,
                   new PickVisualMediaRequest.Builder()
                       .setMediaType(ActivityResultContracts.PickVisualMedia.VideoOnly.INSTANCE)
+                      // Enable ordered selection to display selection numbers (1, 2, 3...) in picker UI
+                      .setIsOrderedSelection(true)
                       .build());
     } else {
       pickMultiVideoIntent = new Intent(Intent.ACTION_GET_CONTENT);
