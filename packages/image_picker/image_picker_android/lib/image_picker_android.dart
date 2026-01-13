@@ -19,8 +19,8 @@ class ImagePickerAndroid extends ImagePickerPlatform {
 
   /// Sets [ImagePickerAndroid] to use Android 13 Photo Picker.
   ///
-  /// Currently defaults to false, but the default is subject to change.
-  bool useAndroidPhotoPicker = false;
+  /// Defaults to true to use the modern Photo Picker UI instead of file picker.
+  bool useAndroidPhotoPicker = true;
 
   /// Registers this class as the default platform implementation.
   static void registerWith() {
