@@ -6,6 +6,7 @@ package io.flutter.plugins.imagepicker;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -90,6 +92,14 @@ public class ImagePickerDelegate
   // Hotokami brand color: #75BE00 (RGB: 117, 190, 0)
   // Color long format: 0xAARRGGBB where AA is alpha (FF for fully opaque)
   private static final long HOTOKAMI_BRAND_COLOR = 0xFF75BE00L;
+
+  /**
+   * Creates ActivityOptions with no enter/exit animations.
+   * Used to prevent the scrim "rising up" animation when launching Photo Picker.
+   */
+  private Bundle getNoAnimationOptions() {
+    return ActivityOptions.makeCustomAnimation(activity, 0, 0).toBundle();
+  }
 
   public enum CameraDevice {
     REAR,
@@ -300,7 +310,8 @@ public class ImagePickerDelegate
 
   private void launchPickMediaFromGalleryIntent(Messages.GeneralOptions generalOptions) {
     Intent pickMediaIntent;
-    if (generalOptions.getUsePhotoPicker()) {
+    boolean usePhotoPicker = generalOptions.getUsePhotoPicker();
+    if (usePhotoPicker) {
       if (generalOptions.getAllowMultiple()) {
         int limit = ImagePickerUtils.getLimitFromOption(generalOptions);
 
@@ -336,7 +347,13 @@ public class ImagePickerDelegate
       pickMediaIntent.putExtra("CONTENT_TYPE", mimeTypes);
       pickMediaIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, generalOptions.getAllowMultiple());
     }
-    activity.startActivityForResult(pickMediaIntent, REQUEST_CODE_CHOOSE_MEDIA_FROM_GALLERY);
+    // Use no-animation options for Photo Picker to prevent scrim "rising up" animation
+    if (usePhotoPicker) {
+      ActivityCompat.startActivityForResult(
+          activity, pickMediaIntent, REQUEST_CODE_CHOOSE_MEDIA_FROM_GALLERY, getNoAnimationOptions());
+    } else {
+      activity.startActivityForResult(pickMediaIntent, REQUEST_CODE_CHOOSE_MEDIA_FROM_GALLERY);
+    }
   }
 
   public void chooseVideoFromGallery(
@@ -367,7 +384,13 @@ public class ImagePickerDelegate
       pickVideoIntent.setType("video/*");
     }
 
-    activity.startActivityForResult(pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
+    // Use no-animation options for Photo Picker to prevent scrim "rising up" animation
+    if (usePhotoPicker) {
+      ActivityCompat.startActivityForResult(
+          activity, pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY, getNoAnimationOptions());
+    } else {
+      activity.startActivityForResult(pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
+    }
   }
 
   public void takeVideoWithCamera(
@@ -466,7 +489,13 @@ public class ImagePickerDelegate
       pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
       pickImageIntent.setType("image/*");
     }
-    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
+    // Use no-animation options for Photo Picker to prevent scrim "rising up" animation
+    if (usePhotoPicker) {
+      ActivityCompat.startActivityForResult(
+          activity, pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY, getNoAnimationOptions());
+    } else {
+      activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
+    }
   }
 
   private void launchMultiPickImageFromGalleryIntent(Boolean usePhotoPicker, int limit) {
@@ -490,8 +519,14 @@ public class ImagePickerDelegate
       pickMultiImageIntent.setType("image/*");
       pickMultiImageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
     }
-    activity.startActivityForResult(
-        pickMultiImageIntent, REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY);
+    // Use no-animation options for Photo Picker to prevent scrim "rising up" animation
+    if (usePhotoPicker) {
+      ActivityCompat.startActivityForResult(
+          activity, pickMultiImageIntent, REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY, getNoAnimationOptions());
+    } else {
+      activity.startActivityForResult(
+          pickMultiImageIntent, REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY);
+    }
   }
 
   public void chooseMultiVideoFromGallery(
@@ -528,8 +563,14 @@ public class ImagePickerDelegate
       pickMultiVideoIntent.setType("video/*");
       pickMultiVideoIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
     }
-    activity.startActivityForResult(
-        pickMultiVideoIntent, REQUEST_CODE_CHOOSE_MULTI_VIDEO_FROM_GALLERY);
+    // Use no-animation options for Photo Picker to prevent scrim "rising up" animation
+    if (usePhotoPicker) {
+      ActivityCompat.startActivityForResult(
+          activity, pickMultiVideoIntent, REQUEST_CODE_CHOOSE_MULTI_VIDEO_FROM_GALLERY, getNoAnimationOptions());
+    } else {
+      activity.startActivityForResult(
+          pickMultiVideoIntent, REQUEST_CODE_CHOOSE_MULTI_VIDEO_FROM_GALLERY);
+    }
   }
 
   public void takeImageWithCamera(
