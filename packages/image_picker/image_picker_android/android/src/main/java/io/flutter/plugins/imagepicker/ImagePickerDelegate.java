@@ -735,9 +735,25 @@ public class ImagePickerDelegate
         return false;
     }
 
+    // Disable return animation for Photo Picker (gallery) requests
+    if (isPhotoPickerRequest(requestCode)) {
+      activity.overridePendingTransition(0, 0);
+    }
+
     executor.execute(handlerRunnable);
 
     return true;
+  }
+
+  /**
+   * Checks if the request code is for a Photo Picker (gallery) operation.
+   */
+  private boolean isPhotoPickerRequest(int requestCode) {
+    return requestCode == REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY
+        || requestCode == REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY
+        || requestCode == REQUEST_CODE_CHOOSE_MULTI_VIDEO_FROM_GALLERY
+        || requestCode == REQUEST_CODE_CHOOSE_MEDIA_FROM_GALLERY
+        || requestCode == REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY;
   }
 
   @Nullable
